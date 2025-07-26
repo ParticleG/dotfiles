@@ -1,0 +1,8 @@
+.cache
+.dotnet
+.local
+.mozilla
+.oh-my-zsh
+.pki
+.vscode
+^[^.].*
