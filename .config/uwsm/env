@@ -1,0 +1,10 @@
+export GNOME_KEYRING_CONTROL="$XDG_RUNTIME_DIR/keyring"
+export GTK_THEME=Adwaita:dark
+export HYPRCURSOR_THEME=rose-pine-hyprcursor
+export HYPRCURSOR_SIZE=24
+export LANG=zh_CN.UTF-8
+export QT_QPA_PLATFORMTHEME=qt6ct
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
+export XCURSOR_SIZE=24
+export XDG_CURRENT_DESKTOP=Hyprland
+export WAYLAND_DISPLAY=wayland-1

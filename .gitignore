@@ -1,4 +1,13 @@
 *
 !/.config/
 !/.config/**
-/.config/QQ/
+/.config/autostart/**
+/.config/Code/**
+/.config/dconf/**
+/.config/fcitx/dbus/**
+/.config/fcitx5/conf/cached_layouts
+/.config/ibus/**
+/.config/io.github.clash-verge-rev.clash-verge-rev/window_state.json
+/.config/Moonlight Game Streaming Project/Moonlight.conf
+/.config/pulse/cookie
+/.config/QQ/**
