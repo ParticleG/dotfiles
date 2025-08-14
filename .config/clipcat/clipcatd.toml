@@ -1,25 +1,55 @@
+# Run as a traditional UNIX daemon.
 daemonize = true
+
+# File path for the PID file.
+# If this value is omitted, `clipcatd` will place the PID file in `$XDG_RUNTIME_DIR/clipcatd.pid`.
 pid_file = "/run/user/1000/clipcatd.pid"
+
+# Controls how often the program updates its stored value of the Linux primary selection.
+# In the Linux environment, the primary selection automatically updates to reflect the currently highlighted text or object,
+# typically updating with every mouse movement.
 primary_threshold_ms = 5000
+
+# Maximum number of clips in history.
 max_history = 50
-synchronize_selection_with_clipboard = true
+
+# File path for clip history.
+# If this value is omitted, `clipcatd` will persist history in `$XDG_CACHE_HOME/clipcat/clipcatd-history`.
 history_file_path = "/home/particleg/.cache/clipcat/clipcatd-history"
+
+synchronize_selection_with_clipboard = true
 snippets = []
 
 [log]
+# Emit log messages to a log file.
+# If this value is omitted, `clipcatd` will disable logging to a file.
+# file_path = "/path/to/log/file"
+
 emit_journald = true
 emit_stdout = false
 emit_stderr = false
 level = "INFO"
 
 [watcher]
+# Enable watching the X11/Wayland clipboard selection.
 enable_clipboard = true
+# Enable watching the X11/Wayland primary selection.
 enable_primary = true
+# Enable watching the X11/Wayland secondary selection.
 enable_secondary = false
+
+# Ignore X11 clips that match any of the MIME types.
 sensitive_x11_atoms = ["x-kde-passwordManagerHint"]
+
+# Ignore text clips with a length less than or equal to `filter_text_min_length`, in characters (Unicode scalar value), not bytes.
 filter_text_min_length = 1
+# Ignore text clips with a length greater than `filter_text_max_length`, in characters (Unicode scalar value), not bytes.
 filter_text_max_length = 20000000
+
+# Ignore text clips that match any of the provided regular expressions.
+# The regular expression engine is powered by https://github.com/rust-lang/regex.
 denied_text_regex_patterns = []
+
 capture_image = true
 filter_image_max_size = 5242880
 
@@ -28,10 +58,18 @@ enable_http = true
 enable_local_socket = true
 host = "127.0.0.1"
 port = 45045
+
+# Path for the Unix domain socket.
+# If this value is omitted, `clipcatd` will place the socket in `$XDG_RUNTIME_DIR/clipcat/grpc.sock`.
 local_socket = "/run/user/1000/clipcat/grpc.sock"
 
 [dbus]
 enable = true
+
+# Specify the identifier for the current `clipcat` instance.
+# The D-Bus service name will appear as "org.clipcat.clipcat.instance-0".
+# If the identifier is not provided, the D-Bus service name will appear as "org.clipcat.clipcat".
+# identifier = "instance-0"
 
 [metrics]
 enable = true
