@@ -1,38 +1,31 @@
-[server]
-host = "127.0.0.1"
-port = 45045
+server_endpoint = "/run/user/1000/clipcat/grpc.sock"
+finder = "rofi"
+preview_length = 80
+
+[rofi]
+line_length = 100
+menu_length = 30
+menu_prompt = "Clipcat"
+extra_arguments = []
+
+[dmenu]
+line_length = 100
+menu_length = 30
+menu_prompt = "Clipcat"
+extra_arguments = []
+
+[choose]
+line_length = 100
+menu_length = 30
+menu_prompt = "Clipcat"
+extra_arguments = []
+
+[custom_finder]
+program = "fzf"
+args = []
 
 [log]
-level = "WARN"
-
-[ui]
-# 主题
-theme = "dark"
-# 菜单默认长度
-default_length = 10
-# 每页显示的行数
-lines_of_page = 15
-# 菜单位置 "top-left" | "top" | "top-right" | "right" | "bottom-right" | "bottom" | "bottom-left" | "left" | "center"
-menu_position = "center"
-# 搜索过滤器默认选择
-default_filter = "All"
-
-[keybinding]
-# 向上选择
-cursor_up = ["Up", "Ctrl-k", "Ctrl-p"]
-# 向下选择  
-cursor_down = ["Down", "Ctrl-j", "Ctrl-n"]
-# 选择第一项
-cursor_top = ["Home", "Ctrl-Home"]
-# 选择最后一项
-cursor_bottom = ["End", "Ctrl-End"]
-# 选择并复制
-select_and_copy = ["Return"]
-# 取消/退出
-cancel = ["Escape", "Ctrl-c", "Ctrl-g", "Ctrl-["]
-# 删除选中项
-delete_selection = ["Delete", "Ctrl-d"]
-# 下一页
-next_page = ["Page_Down", "Ctrl-v"]
-# 上一页  
-previous_page = ["Page_Up", "Alt-v"]
+emit_journald = true
+emit_stdout = false
+emit_stderr = false
+level = "INFO"
