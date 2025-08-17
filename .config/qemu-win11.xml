@@ -9,8 +9,8 @@
   <memory unit="KiB">16777216</memory>
   <currentMemory unit="KiB">16777216</currentMemory>
   <memoryBacking>
-    <hugepages/>
-    <locked/>
+    <source type="memfd"/>
+    <access mode="shared"/>
   </memoryBacking>
   <vcpu placement="static">8</vcpu>
   <os firmware="efi">
@@ -193,6 +193,7 @@
       <source>
         <address domain="0x0000" bus="0x00" slot="0x02" function="0x1"/>
       </source>
+      <rom file="/home/particleg/Downloads/vga.rom"/>
       <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
     </hostdev>
     <redirdev bus="usb" type="spicevmc">
@@ -206,10 +207,8 @@
   </devices>
   <qemu:commandline>
     <qemu:arg value="-device"/>
-    <qemu:arg value="ivshmem-plain,id=shmem0,memdev=looking-glass"/>
+    <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
     <qemu:arg value="-object"/>
-    <qemu:arg value="memory-backend-file,id=looking-glass,mem-path=/dev/kvmfr0,size=256M,share=yes"/>
-    <qemu:arg value="-machine"/>
-    <qemu:arg value="kernel_irqchip=on"/>
+    <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':33554432,'share':true}"/>
   </qemu:commandline>
 </domain>
