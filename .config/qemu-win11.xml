@@ -208,16 +208,19 @@
     </hostdev>
     <watchdog model="itco" action="reset"/>
     <memballoon model="none"/>
-    <!--
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
       <size unit="M">128</size>
       <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
     </shmem>
-    -->
   </devices>
   <qemu:commandline>
     <qemu:arg value="-set"/>
     <qemu:arg value="device.hostdev0.x-no-mmap=on"/>
+    <qemu:arg value="-set"/>
+    <qemu:arg value="device.hostdev0.x-no-kvm-intx=on"/>
+    <qemu:arg value="device.hostdev0.x-no-mmap=on"/>
+    <qemu:arg value="-set"/>
+    <qemu:arg value="device.hostdev0.x-igd-opregion=on"/>
   </qemu:commandline>
 </domain>
