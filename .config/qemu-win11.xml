@@ -1,4 +1,4 @@
-<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
+<domain type="kvm">
   <name>win11</name>
   <uuid>44916993-8646-40f9-974c-44b4aba1bcda</uuid>
   <metadata>
@@ -6,7 +6,7 @@
       <libosinfo:os id="http://microsoft.com/win/11"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit="KiB">33554432</memory>
+  <memory unit="KiB">16777216</memory>
   <currentMemory unit="KiB">16777216</currentMemory>
   <memoryBacking>
     <source type="memfd"/>
@@ -66,13 +66,6 @@
       <source file="/var/lib/libvirt/images/win11.qcow2"/>
       <target dev="vda" bus="virtio"/>
       <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
-    </disk>
-    <disk type="file" device="cdrom">
-      <driver name="qemu" type="raw"/>
-      <source file="/home/particleg/Downloads/virtio-win-0.1.271.iso"/>
-      <target dev="sda" bus="sata"/>
-      <readonly/>
-      <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
     <controller type="usb" index="0" model="qemu-xhci" ports="15">
       <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
@@ -177,46 +170,46 @@
     <console type="pty">
       <target type="serial" port="0"/>
     </console>
-    <input type="mouse" bus="virtio">
-      <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
-    </input>
-    <input type="keyboard" bus="virtio">
-      <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
-    </input>
+    <channel type="spicevmc">
+      <target type="virtio" name="com.redhat.spice.0"/>
+      <address type="virtio-serial" controller="0" bus="0" port="1"/>
+    </channel>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
+    <input type="mouse" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+    </input>
+    <input type="keyboard" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
+    </input>
     <tpm model="tpm-crb">
       <backend type="emulator" version="2.0"/>
     </tpm>
-    <graphics type="spice" autoport="yes">
+    <graphics type="spice" port="-1" autoport="no">
       <listen type="address"/>
       <image compression="off"/>
       <gl enable="no"/>
     </graphics>
     <sound model="ich9">
-      <audio id="1"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1b" function="0x0"/>
     </sound>
     <audio id="1" type="spice"/>
     <video>
-      <model type="vga" vram="16384" heads="1" primary="yes"/>
+      <model type="qxl" ram="65536" vram="65536" vgamem="16384" heads="1" primary="yes"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x0"/>
     </video>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x00" slot="0x02" function="0x1"/>
       </source>
-      <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
     </hostdev>
     <watchdog model="itco" action="reset"/>
-    <memballoon model="virtio">
-      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
-    </memballoon>
+    <memballoon model="none"/>
+    <shmem name="looking-glass">
+      <model type="ivshmem-plain"/>
+      <size unit="M">128</size>
+      <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
+    </shmem>
   </devices>
-  <qemu:commandline>
-    <qemu:arg value="-device"/>
-    <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
-    <qemu:arg value="-object"/>
-    <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':134217728,'share':true}"/>
-  </qemu:commandline>
 </domain>
