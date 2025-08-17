@@ -10,6 +10,7 @@
   <currentMemory unit="KiB">16777216</currentMemory>
   <memoryBacking>
     <hugepages/>
+    <locked/>
   </memoryBacking>
   <vcpu placement="static">8</vcpu>
   <os firmware="efi">
@@ -41,6 +42,7 @@
     </hyperv>
     <vmport state="off"/>
     <smm state="on"/>
+    <ioapic driver="kvm"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" clusters="1" cores="4" threads="2"/>
@@ -204,8 +206,10 @@
   </devices>
   <qemu:commandline>
     <qemu:arg value="-device"/>
-    <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
+    <qemu:arg value="ivshmem-plain,id=shmem0,memdev=looking-glass"/>
     <qemu:arg value="-object"/>
-    <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':268435456,'share':true}"/>
+    <qemu:arg value="memory-backend-file,id=looking-glass,mem-path=/dev/kvmfr0,size=256M,share=yes"/>
+    <qemu:arg value="-machine"/>
+    <qemu:arg value="kernel_irqchip=on"/>
   </qemu:commandline>
 </domain>
