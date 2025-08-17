@@ -1,6 +1,6 @@
-<domain type="kvm">
+<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
   <name>win11</name>
-  <uuid>44916993-8646-40f9-974c-44b4aba1bcda</uuid>
+  <uuid>e4cdcc33-3c15-4468-af1d-05d53b5feb1a</uuid>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
       <libosinfo:os id="http://microsoft.com/win/11"/>
@@ -42,7 +42,6 @@
     </hyperv>
     <vmport state="off"/>
     <smm state="on"/>
-    <ioapic driver="kvm"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" clusters="1" cores="4" threads="2"/>
@@ -66,7 +65,7 @@
       <driver name="qemu" type="qcow2" discard="unmap"/>
       <source file="/var/lib/libvirt/images/win11.qcow2"/>
       <target dev="vda" bus="virtio"/>
-      <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
     </disk>
     <controller type="usb" index="0" model="qemu-xhci" ports="15">
       <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
@@ -142,15 +141,6 @@
       <target chassis="14" port="0x1d"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x5"/>
     </controller>
-    <controller type="pci" index="15" model="pcie-root-port">
-      <model name="pcie-root-port"/>
-      <target chassis="15" port="0x1e"/>
-      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x6"/>
-    </controller>
-    <controller type="pci" index="16" model="pcie-to-pci-bridge">
-      <model name="pcie-pci-bridge"/>
-      <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
-    </controller>
     <controller type="sata" index="0">
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
     </controller>
@@ -158,7 +148,7 @@
       <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
     </controller>
     <interface type="network">
-      <mac address="52:54:00:32:32:36"/>
+      <mac address="52:54:00:dc:04:08"/>
       <source network="default"/>
       <model type="virtio"/>
       <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
@@ -186,10 +176,9 @@
     <tpm model="tpm-crb">
       <backend type="emulator" version="2.0"/>
     </tpm>
-    <graphics type="spice" port="-1" autoport="no">
+    <graphics type="spice" autoport="yes">
       <listen type="address"/>
       <image compression="off"/>
-      <gl enable="no"/>
     </graphics>
     <sound model="ich9">
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1b" function="0x0"/>
@@ -203,24 +192,21 @@
       <source>
         <address domain="0x0000" bus="0x00" slot="0x02" function="0x1"/>
       </source>
-      <rom bar="on"/>
-      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
     </hostdev>
+    <redirdev bus="usb" type="spicevmc">
+      <address type="usb" bus="0" port="1"/>
+    </redirdev>
+    <redirdev bus="usb" type="spicevmc">
+      <address type="usb" bus="0" port="2"/>
+    </redirdev>
     <watchdog model="itco" action="reset"/>
     <memballoon model="none"/>
-    <shmem name="looking-glass">
-      <model type="ivshmem-plain"/>
-      <size unit="M">128</size>
-      <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
-    </shmem>
   </devices>
   <qemu:commandline>
-    <qemu:arg value="-set"/>
-    <qemu:arg value="device.hostdev0.x-no-mmap=on"/>
-    <qemu:arg value="-set"/>
-    <qemu:arg value="device.hostdev0.x-no-kvm-intx=on"/>
-    <qemu:arg value="device.hostdev0.x-no-mmap=on"/>
-    <qemu:arg value="-set"/>
-    <qemu:arg value="device.hostdev0.x-igd-opregion=on"/>
+    <qemu:arg value="-device"/>
+    <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':33554432,'share':true}"/>
   </qemu:commandline>
 </domain>
