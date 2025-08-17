@@ -196,8 +196,7 @@
     </sound>
     <audio id="1" type="spice"/>
     <video>
-      <model type="qxl" ram="65536" vram="65536" vgamem="16384" heads="1" primary="yes"/>
-      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x0"/>
+      <model type="none"/>
     </video>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
@@ -208,10 +207,16 @@
     </hostdev>
     <watchdog model="itco" action="reset"/>
     <memballoon model="none"/>
+    <!--
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
       <size unit="M">128</size>
       <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
     </shmem>
+    -->
   </devices>
+  <qemu:commandline>
+    <qemu:arg value="-set"/>
+    <qemu:arg value="device.hostdev0.x-no-mmap=on"/>
+  </qemu:commandline>
 </domain>
