@@ -1,0 +1,5 @@
+-Xmx2048m
+-Dawt.toolkit.name=WLToolkit
+-Dide.managed.by.toolbox=/opt/jetbrains-toolbox/jetbrains-toolbox
+-Dtoolbox.notification.token=c90145f3-bf4e-447a-96e7-2f97ac0c2deb
+-Dtoolbox.notification.portFile=/home/particleg/.cache/JetBrains/Toolbox/ports/5e82e8ef-910d-4f01-bcf8-34330f7f65be.port
