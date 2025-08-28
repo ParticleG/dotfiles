@@ -28,8 +28,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-log "Starting clipboard sync service (interval: ${SYNC_INTERVAL}s)"
-
 # Create log directory
 mkdir -p "$(dirname "$LOG_FILE")"
 
@@ -37,6 +35,8 @@ mkdir -p "$(dirname "$LOG_FILE")"
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
 }
+
+log "Starting clipboard sync service (interval: ${SYNC_INTERVAL}s)"
 
 # Check if tools are available
 check_tools() {
@@ -65,7 +65,63 @@ get_x11_clipboard() {
     DISPLAY=:0 xclip -selection clipboard -o 2>/dev/null || echo ""
 }
 
-# Functions to set clipboard content
+# Functions to check clipboard content types
+get_wayland_types() {
+    wl-paste --list-types 2>/dev/null || echo ""
+}
+
+get_x11_types() {
+    DISPLAY=:0 xclip -selection clipboard -t TARGETS -o 2>/dev/null || echo ""
+}
+
+# Functions to sync clipboard content with type detection
+sync_wayland_to_x11() {
+    local types=$(get_wayland_types)
+    
+    # Check for image types first
+    if echo "$types" | grep -q "image/"; then
+        local image_type=$(echo "$types" | grep "image/" | head -1)
+        if wl-paste --type "$image_type" | DISPLAY=:0 xclip -selection clipboard -t "$image_type" 2>/dev/null; then
+            log "Wayland -> X11: Image ($image_type)"
+            return 0
+        fi
+    fi
+    
+    # Fall back to text
+    local content=$(get_wayland_clipboard)
+    if [[ -n "$content" ]]; then
+        echo -n "$content" | DISPLAY=:0 xclip -selection clipboard 2>/dev/null
+        log "Wayland -> X11: $(echo "$content" | head -c 50)..."
+        return 0
+    fi
+    
+    return 1
+}
+
+sync_x11_to_wayland() {
+    local types=$(get_x11_types)
+    
+    # Check for image types first
+    if echo "$types" | grep -q "image/"; then
+        local image_type=$(echo "$types" | grep "image/" | head -1)
+        if DISPLAY=:0 xclip -selection clipboard -t "$image_type" -o | wl-copy --type "$image_type" 2>/dev/null; then
+            log "X11 -> Wayland: Image ($image_type)"
+            return 0
+        fi
+    fi
+    
+    # Fall back to text
+    local content=$(get_x11_clipboard)
+    if [[ -n "$content" ]]; then
+        echo -n "$content" | wl-copy 2>/dev/null
+        log "X11 -> Wayland: $(echo "$content" | head -c 50)..."
+        return 0
+    fi
+    
+    return 1
+}
+
+# Functions to set clipboard content (legacy - for text only)
 set_wayland_clipboard() {
     echo -n "$1" | wl-copy 2>/dev/null
 }
@@ -93,36 +149,81 @@ trap cleanup SIGTERM SIGINT
 # Check necessary tools
 check_tools
 
-# Initialize last content hash
+# Initialize last sync timestamps and content hashes
+last_wayland_sync=0
+last_x11_sync=0
 last_wayland_hash=""
 last_x11_hash=""
 
 log "Clipboard sync service started, sync interval: ${SYNC_INTERVAL}s"
 
+# Function to get current timestamp
+current_time() {
+    date +%s
+}
+
+# Function to calculate content hash safely
+get_content_hash() {
+    local source="$1"
+    if [[ "$source" == "wayland" ]]; then
+        local types=$(get_wayland_types)
+        if echo "$types" | grep -q "image/"; then
+            # For images, use types + file size as hash
+            local image_type=$(echo "$types" | grep "image/" | head -1)
+            wl-paste --type "$image_type" 2>/dev/null | wc -c | md5sum | cut -d' ' -f1
+        else
+            # For text, use content
+            get_wayland_clipboard | md5sum | cut -d' ' -f1
+        fi
+    else
+        local types=$(get_x11_types)
+        if echo "$types" | grep -q "image/"; then
+            # For images, use types + file size as hash
+            local image_type=$(echo "$types" | grep "image/" | head -1)
+            DISPLAY=:0 xclip -selection clipboard -t "$image_type" -o 2>/dev/null | wc -c | md5sum | cut -d' ' -f1
+        else
+            # For text, use content
+            get_x11_clipboard | md5sum | cut -d' ' -f1
+        fi
+    fi
+}
+
 # Main sync loop
 while true; do
-    # Get current clipboard content
-    wayland_content=$(get_wayland_clipboard)
-    x11_content=$(get_x11_clipboard)
+    current_time=$(current_time)
     
-    # Calculate content hash
-    wayland_hash=$(hash_content "$wayland_content")
-    x11_hash=$(hash_content "$x11_content")
+    # Get current content hashes
+    wayland_hash=$(get_content_hash "wayland")
+    x11_hash=$(get_content_hash "x11")
     
     # Check if Wayland clipboard has new content
-    if [[ -n "$wayland_content" && "$wayland_hash" != "$last_wayland_hash" && "$wayland_hash" != "$x11_hash" ]]; then
-        set_x11_clipboard "$wayland_content"
-        log "Wayland -> X11: $(echo "$wayland_content" | head -c 50)..."
-        last_wayland_hash="$wayland_hash"
-        last_x11_hash="$wayland_hash"  # Avoid immediate reverse sync
+    if [[ -n "$wayland_hash" && "$wayland_hash" != "$last_wayland_hash" && "$wayland_hash" != "$x11_hash" && $((current_time - last_x11_sync)) -gt 3 ]]; then
+        wayland_types=$(get_wayland_types)
+        if [[ -n "$wayland_types" ]]; then
+            if sync_wayland_to_x11; then
+                last_wayland_sync=$current_time
+                last_wayland_hash="$wayland_hash"
+            fi
+        fi
     fi
     
     # Check if X11 clipboard has new content
-    if [[ -n "$x11_content" && "$x11_hash" != "$last_x11_hash" && "$x11_hash" != "$wayland_hash" ]]; then
-        set_wayland_clipboard "$x11_content"
-        log "X11 -> Wayland: $(echo "$x11_content" | head -c 50)..."
+    if [[ -n "$x11_hash" && "$x11_hash" != "$last_x11_hash" && "$x11_hash" != "$wayland_hash" && $((current_time - last_wayland_sync)) -gt 3 ]]; then
+        x11_types=$(get_x11_types)
+        if [[ -n "$x11_types" ]]; then
+            if sync_x11_to_wayland; then
+                last_x11_sync=$current_time
+                last_x11_hash="$x11_hash"
+            fi
+        fi
+    fi
+    
+    # Update last known hashes
+    if [[ -n "$wayland_hash" ]]; then
+        last_wayland_hash="$wayland_hash"
+    fi
+    if [[ -n "$x11_hash" ]]; then
         last_x11_hash="$x11_hash"
-        last_wayland_hash="$x11_hash"  # Avoid immediate reverse sync
     fi
     
     sleep "$SYNC_INTERVAL"
