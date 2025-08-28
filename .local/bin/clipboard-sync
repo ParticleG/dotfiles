@@ -197,7 +197,7 @@ while true; do
     x11_hash=$(get_content_hash "x11")
     
     # Check if Wayland clipboard has new content
-    if [[ -n "$wayland_hash" && "$wayland_hash" != "$last_wayland_hash" && "$wayland_hash" != "$x11_hash" && $((current_time - last_x11_sync)) -gt 3 ]]; then
+    if [[ -n "$wayland_hash" && "$wayland_hash" != "$last_wayland_hash" && "$wayland_hash" != "$x11_hash" && $((current_time - last_x11_sync)) -gt 1 ]]; then
         wayland_types=$(get_wayland_types)
         if [[ -n "$wayland_types" ]]; then
             if sync_wayland_to_x11; then
@@ -208,7 +208,7 @@ while true; do
     fi
     
     # Check if X11 clipboard has new content
-    if [[ -n "$x11_hash" && "$x11_hash" != "$last_x11_hash" && "$x11_hash" != "$wayland_hash" && $((current_time - last_wayland_sync)) -gt 3 ]]; then
+    if [[ -n "$x11_hash" && "$x11_hash" != "$last_x11_hash" && "$x11_hash" != "$wayland_hash" && $((current_time - last_wayland_sync)) -gt 1 ]]; then
         x11_types=$(get_x11_types)
         if [[ -n "$x11_types" ]]; then
             if sync_x11_to_wayland; then
