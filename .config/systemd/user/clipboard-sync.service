@@ -1,0 +1,15 @@
+[Unit]
+Description=Clipboard Sync between Wayland and X11
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/clipboard-sync --interval 0.5
+Restart=on-failure
+RestartSec=3
+Environment=DISPLAY=:0
+Environment=WAYLAND_DISPLAY=wayland-1
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,129 @@
+#!/bin/bash
+# clipboard-sync - Sync Wayland and X11 clipboard
+
+SYNC_INTERVAL=1  # Default sync interval (seconds)
+LOG_FILE="$HOME/.local/share/clipboard-sync.log"
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --interval)
+            SYNC_INTERVAL="$2"
+            shift 2
+            ;;
+        --help|-h)
+            echo "Usage: $0 [--interval SECONDS]"
+            echo "Sync Wayland and X11 clipboard"
+            echo ""
+            echo "Options:"
+            echo "  --interval SECONDS  Sync interval (default: 1 second)"
+            echo "  --help, -h          Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for help"
+            exit 1
+            ;;
+    esac
+done
+
+log "Starting clipboard sync service (interval: ${SYNC_INTERVAL}s)"
+
+# Create log directory
+mkdir -p "$(dirname "$LOG_FILE")"
+
+# Log function
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+}
+
+# Check if tools are available
+check_tools() {
+    if ! command -v wl-paste >/dev/null 2>&1; then
+        echo "Error: wl-paste not found, please install wl-clipboard" >&2
+        exit 1
+    fi
+    
+    if ! command -v wl-copy >/dev/null 2>&1; then
+        echo "Error: wl-copy not found, please install wl-clipboard" >&2
+        exit 1
+    fi
+    
+    if ! command -v xclip >/dev/null 2>&1; then
+        echo "Error: xclip not found, please install xclip" >&2
+        exit 1
+    fi
+}
+
+# Functions to get clipboard content
+get_wayland_clipboard() {
+    wl-paste 2>/dev/null || echo ""
+}
+
+get_x11_clipboard() {
+    DISPLAY=:0 xclip -selection clipboard -o 2>/dev/null || echo ""
+}
+
+# Functions to set clipboard content
+set_wayland_clipboard() {
+    echo -n "$1" | wl-copy 2>/dev/null
+}
+
+set_x11_clipboard() {
+    echo -n "$1" | DISPLAY=:0 xclip -selection clipboard 2>/dev/null
+}
+
+# Calculate content hash (avoid infinite loop)
+hash_content() {
+    echo -n "$1" | md5sum | cut -d' ' -f1
+}
+
+# Signal handler function
+cleanup() {
+    log "Clipboard sync service stopped"
+    echo "Clipboard sync service stopped"
+    exit 0
+}
+
+# Set signal handler
+trap cleanup SIGTERM SIGINT
+
+
+# Check necessary tools
+check_tools
+
+# Initialize last content hash
+last_wayland_hash=""
+last_x11_hash=""
+
+log "Clipboard sync service started, sync interval: ${SYNC_INTERVAL}s"
+
+# Main sync loop
+while true; do
+    # Get current clipboard content
+    wayland_content=$(get_wayland_clipboard)
+    x11_content=$(get_x11_clipboard)
+    
+    # Calculate content hash
+    wayland_hash=$(hash_content "$wayland_content")
+    x11_hash=$(hash_content "$x11_content")
+    
+    # Check if Wayland clipboard has new content
+    if [[ -n "$wayland_content" && "$wayland_hash" != "$last_wayland_hash" && "$wayland_hash" != "$x11_hash" ]]; then
+        set_x11_clipboard "$wayland_content"
+        log "Wayland -> X11: $(echo "$wayland_content" | head -c 50)..."
+        last_wayland_hash="$wayland_hash"
+        last_x11_hash="$wayland_hash"  # Avoid immediate reverse sync
+    fi
+    
+    # Check if X11 clipboard has new content
+    if [[ -n "$x11_content" && "$x11_hash" != "$last_x11_hash" && "$x11_hash" != "$wayland_hash" ]]; then
+        set_wayland_clipboard "$x11_content"
+        log "X11 -> Wayland: $(echo "$x11_content" | head -c 50)..."
+        last_x11_hash="$x11_hash"
+        last_wayland_hash="$x11_hash"  # Avoid immediate reverse sync
+    fi
+    
+    sleep "$SYNC_INTERVAL"
+done

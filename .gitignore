@@ -29,3 +29,6 @@
 /.config/smplayer/player_info.ini
 /.config/smplayer/playlist.ini
 /.config/unity3d/**
+!/.local/
+!/.local/bin/
+!/.local/bin/**
