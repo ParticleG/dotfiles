@@ -10,12 +10,8 @@
 /.config/go/telemetry/**
 /.config/ibus/**
 /.config/io.github.clash-verge-rev.clash-verge-rev/window_state.json
-/.config/JetBrains/**/*.db
-/.config/JetBrains/**/*.json
-/.config/JetBrains/**/*.key
-/.config/JetBrains/**/*.license
-/.config/JetBrains/**/*.txt
-/.config/JetBrains/**/*.xml
+/.config/JetBrains/**/*
+!/.config/JetBrains/**/*.vmoptions
 /.config/jgit/**
 /.config/Moonlight Game Streaming Project/Moonlight.conf
 /.config/pulse/cookie
