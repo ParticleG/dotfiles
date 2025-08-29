@@ -1,4 +1,4 @@
--Xmx2048m
+-Xmx8192m
 -Dawt.toolkit.name=WLToolkit
 -Dide.managed.by.toolbox=/opt/jetbrains-toolbox/jetbrains-toolbox
 -Dtoolbox.notification.token=c90145f3-bf4e-447a-96e7-2f97ac0c2deb
