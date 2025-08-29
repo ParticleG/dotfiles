@@ -15,6 +15,7 @@
 /.config/ibus/**
 /.config/io.github.clash-verge-rev.clash-verge-rev/window_state.json
 /.config/JetBrains/**/*
+!/.config/JetBrains/**/migrate.config
 !/.config/JetBrains/**/*.vmoptions
 /.config/jgit/**
 /.config/Moonlight Game Streaming Project/Moonlight.conf
