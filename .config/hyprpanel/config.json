@@ -1,5 +1,21 @@
 {
   "bar.customModules.storage.paths": [
     "/"
-  ]
+  ],
+  "theme.bar.menus.monochrome": false,
+  "wallpaper.pywal": true,
+  "theme.bar.menus.opacity": 100,
+  "scalingPriority": "hyprland",
+  "theme.bar.floating": true,
+  "bar.autoHide": "never",
+  "theme.bar.buttons.enableBorders": false,
+  "theme.bar.border.location": "full",
+  "theme.bar.border_radius": "1.0rem",
+  "theme.bar.buttons.y_margins": "0.4em",
+  "theme.bar.enableShadow": false,
+  "theme.bar.outer_spacing": "1.6em",
+  "theme.bar.margin_top": "0.0em",
+  "theme.bar.margin_sides": "0.0em",
+  "theme.bar.border.width": "0.15rem",
+  "theme.bar.margin_bottom": "0.5rem"
 }
