@@ -54,5 +54,6 @@
   "bar.volume.scrollUp": "hyprpanel vol +5",
   "bar.network.showWifiInfo": true,
   "bar.network.label": false,
-  "bar.bluetooth.label": false
+  "bar.bluetooth.label": false,
+  "theme.bar.buttons.windowtitle.enableBorder": false
 }
