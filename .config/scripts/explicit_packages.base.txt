@@ -1,0 +1,6 @@
+base
+base-devel
+linux
+linux-firmware
+linux-headers
+intel-ucode
