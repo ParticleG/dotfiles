@@ -7,9 +7,10 @@
 /.config/fcitx/dbus/**
 /.config/fcitx5/conf/cached_layouts
 /.config/freerdp/server/**
-/.config/github-copilot/ws/*
 /.config/github-copilot/apps.json
+/.config/github-copilot/go/**
 /.config/github-copilot/versions.json
+/.config/github-copilot/ws/*
 /.config/github-copilot/*.md
 /.config/go/telemetry/**
 /.config/ibus/**
