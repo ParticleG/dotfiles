@@ -1,5 +1,7 @@
 ags-hyprpanel-git
 archlinuxcn-keyring
+base
+base-devel
 bluetuith-bin
 bluez
 bluez-utils
@@ -36,11 +38,15 @@ hyprpolkitagent
 i915-sriov-dkms
 intel-media-driver
 intel-npu-driver-bin
+intel-ucode
 jetbrains-toolbox
 kitty
 libpulse
 libva-intel-driver
 libva-utils
+linux
+linux-firmware
+linux-headers
 linuxqq
 lutris
 mesa-utils
@@ -54,6 +60,7 @@ noto-fonts-emoji
 pam-fprint-grosshack-unlimited-timeout
 parsec-bin
 paru
+pavucontrol
 pipewire
 pipewire-alsa
 pipewire-jack
