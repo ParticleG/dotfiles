@@ -1,0 +1,113 @@
+#!/bin/bash
+# Smart audio device switcher for ThinkPad T14 Gen 3
+# Automatically switches between Headphones and Speaker profiles
+# Priority: Headphones (when available) > Speaker > HDMI
+
+CARD="alsa_card.pci-0000_00_1f.3-platform-skl_hda_dsp_generic"
+PROFILE_HEADPHONES="HiFi (HDMI1, HDMI2, HDMI3, Headphones, Mic1, Mic2)"
+PROFILE_SPEAKER="HiFi (HDMI1, HDMI2, HDMI3, Mic1, Mic2, Speaker)"
+
+# Function to check if headphones are plugged in
+check_headphone_jack() {
+    pactl list cards | grep -A 50 "$CARD" | grep -A 3 "\[Out\] Headphones" | grep -q "available"
+}
+
+# Function to get current profile
+get_current_profile() {
+    pactl list cards | grep -A 50 "$CARD" | grep "Active Profile:" | sed 's/.*Active Profile: //'
+}
+
+# Function to switch to headphones profile and set as default
+switch_to_headphones() {
+    echo "Switching to Headphones profile..."
+    pactl set-card-profile "$CARD" "$PROFILE_HEADPHONES"
+    sleep 0.5
+    
+    # Get headphones sink ID and set as default
+    HEADPHONE_SINK=$(pactl list sinks short | grep "Headphones" | awk '{print $1}')
+    if [ -n "$HEADPHONE_SINK" ]; then
+        wpctl set-default "$HEADPHONE_SINK"
+        echo "✓ Headphones set as default audio device (ID: $HEADPHONE_SINK)"
+    fi
+}
+
+# Function to switch to speaker profile and set as default
+switch_to_speaker() {
+    echo "Switching to Speaker profile..."
+    pactl set-card-profile "$CARD" "$PROFILE_SPEAKER"
+    sleep 0.5
+    
+    # Get speaker sink ID and set as default
+    SPEAKER_SINK=$(pactl list sinks short | grep "Speaker" | awk '{print $1}')
+    if [ -n "$SPEAKER_SINK" ]; then
+        wpctl set-default "$SPEAKER_SINK"
+        echo "✓ Speaker set as default audio device (ID: $SPEAKER_SINK)"
+    fi
+}
+
+# Function to switch to HDMI
+switch_to_hdmi() {
+    local hdmi_num=${1:-1}
+    echo "Switching to HDMI${hdmi_num}..."
+    
+    HDMI_SINK=$(pactl list sinks short | grep "HDMI${hdmi_num}" | awk '{print $1}')
+    if [ -n "$HDMI_SINK" ]; then
+        wpctl set-default "$HDMI_SINK"
+        echo "✓ HDMI${hdmi_num} set as default audio device (ID: $HDMI_SINK)"
+    else
+        echo "✗ HDMI${hdmi_num} not found"
+    fi
+}
+
+# Main logic
+case "$1" in
+    auto)
+        CURRENT=$(get_current_profile)
+        
+        if check_headphone_jack && [ "$CURRENT" != "$PROFILE_HEADPHONES" ]; then
+            switch_to_headphones
+        elif ! check_headphone_jack && [ "$CURRENT" != "$PROFILE_SPEAKER" ]; then
+            switch_to_speaker
+        else
+            echo "Already using optimal profile: $CURRENT"
+        fi
+        ;;
+    
+    headphones|hp)
+        switch_to_headphones
+        ;;
+    
+    speaker|spk)
+        switch_to_speaker
+        ;;
+    
+    hdmi1|hdmi)
+        switch_to_hdmi 1
+        ;;
+    
+    hdmi2)
+        switch_to_hdmi 2
+        ;;
+    
+    hdmi3)
+        switch_to_hdmi 3
+        ;;
+    
+    status)
+        echo "Current profile: $(get_current_profile)"
+        echo ""
+        echo "Available sinks:"
+        wpctl status | grep -A 10 "Sinks:" | grep "sof-hda-dsp"
+        ;;
+    
+    *)
+        echo "Usage: $0 {auto|headphones|speaker|hdmi1|hdmi2|hdmi3|status}"
+        echo ""
+        echo "  auto       - Automatically switch based on jack detection"
+        echo "  headphones - Switch to headphones profile"
+        echo "  speaker    - Switch to speaker profile"
+        echo "  hdmi1/2/3  - Switch to HDMI output"
+        echo "  status     - Show current audio status"
+        exit 1
+        ;;
+esac

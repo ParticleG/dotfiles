@@ -13,6 +13,7 @@
 /.config/github-copilot/ws/*
 /.config/github-copilot/*.md
 /.config/go/telemetry/**
+/.config/gopls/prompt/telemetry
 /.config/ibus/**
 /.config/io.github.clash-verge-rev.clash-verge-rev/window_state.json
 /.config/JetBrains/**/*
@@ -34,3 +35,6 @@
 !/.local/
 !/.local/bin/
 !/.local/bin/**
+!/.local/state/
+!/.local/state/wireplumber/
+!/.local/state/wireplumber/**
