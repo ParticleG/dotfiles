@@ -29,6 +29,7 @@ firefox
 fprintd
 freerdp
 gnome-keyring
+grim
 go
 gst-plugin-pipewire
 hypridle
@@ -72,6 +73,7 @@ remmina
 remmina-plugin-rdesktop
 rofi
 seahorse
+slurp
 smplayer
 snapper
 sof-firmware
