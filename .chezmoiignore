@@ -1,0 +1,7 @@
+README.md
+LICENSE
+etc/
+archinstall/
+pkglist-native.txt
+pkglist-aur.txt
+scripts/

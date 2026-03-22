@@ -1,0 +1,18 @@
+[Default Applications]
+x-scheme-handler/clash=sparkle.desktop
+x-scheme-handler/clash-verge=clash-verge.desktop;
+x-scheme-handler/mihomo=sparkle.desktop
+x-scheme-handler/sparkle=sparkle.desktop
+x-scheme-handler/rdp=org.remmina.Remmina.desktop
+x-scheme-handler/spice=org.remmina.Remmina.desktop
+x-scheme-handler/vnc=org.remmina.Remmina.desktop
+x-scheme-handler/remmina=org.remmina.Remmina.desktop
+application/x-remmina=org.remmina.Remmina.desktop
+x-scheme-handler/jetbrains=jetbrainsd.desktop
+
+[Added Associations]
+x-scheme-handler/rdp=org.remmina.Remmina.desktop;
+x-scheme-handler/spice=org.remmina.Remmina.desktop;
+x-scheme-handler/vnc=org.remmina.Remmina.desktop;
+x-scheme-handler/remmina=org.remmina.Remmina.desktop;
+application/x-remmina=org.remmina.Remmina.desktop;

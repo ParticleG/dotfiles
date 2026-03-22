@@ -1,0 +1,1 @@
+root=PARTUUID=780fef08-ca9e-47e5-8748-d613f5d458d3 zswap.enabled=0 rootflags=subvol=@ rw rootfstype=btrfs resume=UUID=5ee7e390-6853-4180-b74d-7cc7eeae3f3e resume_offset=23961935 i915.enable_psr2_sel_fetch=0

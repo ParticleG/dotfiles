@@ -1,0 +1,9 @@
+dms-shell-bin
+dms-shell-bin-debug
+jetbrains-toolbox
+linuxqq-appimage
+microsoft-edge-stable-bin
+parsec-bin
+sparkle-bin
+ttf-sarasa-gothic-sc
+visual-studio-code-bin
