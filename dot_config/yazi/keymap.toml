@@ -1,0 +1,19 @@
+[[mgr.prepend_keymap]]
+on   = "<A-d>"
+run  = 'shell -- ripdrag --no-click --and-exit --icon-size 64 --target --all "$@" | while read filepath; do cp -nR "$filepath" .; done'
+desc = "Drag-n-drop files from and to Yazi (no overwrite)"
+[[mgr.prepend_keymap]]
+on   = "<A-D>"
+run  = 'shell -- ripdrag --no-click --and-exit --icon-size 64 --target --all "$@" | while read filepath; do cp -fR "$filepath" .; done'
+desc = "Drag-n-drop files from and to Yazi (overwrite)"
+[[mgr.prepend_keymap]]
+on   = [ "c", "m" ]
+run  = "plugin chmod"
+desc = "Chmod on selected files"
+[[mgr.prepend_keymap]]
+on   = [ "g", "c" ]
+run  = "plugin vcs-files"
+desc = "Show Git file changes"
+[[mgr.prepend_keymap]]
+on  = "M"
+run = "plugin mount"

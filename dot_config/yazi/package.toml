@@ -1,0 +1,24 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "e95c7b3"
+hash = "e1de3054c0d1a2d8dc6f007eadc0fa31"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "e95c7b3"
+hash = "1adc12c2b2b025411ab61eb8f0879574"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "e95c7b3"
+hash = "2143a53182dbbe935a1abd1623424aa5"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:types"
+rev = "e95c7b3"
+hash = "1e047e1b13b5e3fc6ab1f5d0d04a14e2"
+
+[[flavor.deps]]
+use = "956MB/vscode-dark-modern"
+rev = "cd60541"
+hash = "f970182bee3543831796629ccf078553"
